@@ -4,10 +4,10 @@ require 'pry-byebug'
 
 module BTrees
   class BTree
-    def initialize(minimum_degree: 2)
-      @minimum_degree = minimum_degree
-      @maximum_degree = minimum_degree + 1
-      @root = BTreeNode.new(minimum_degree: minimum_degree)
+    def initialize(max_degree: 3)
+      @max_degree = max_degree
+
+      @root = BTreeNode.new(max_degree: max_degree)
     end
 
     attr_accessor :root
@@ -15,9 +15,9 @@ module BTrees
     def insert(key)
       @root.insert(key)
 
-      return unless @root.full?
+      return unless @root.at_most_keys?
 
-      new_root = BTreeNode.new(minimum_degree: @minimum_degree)
+      new_root = BTreeNode.new(max_degree: @max_degree)
       new_root.children << @root
       new_root.split_child(0)
       @root = new_root
@@ -25,6 +25,6 @@ module BTrees
 
     private
 
-    attr_reader :minimum_degree
+    attr_reader :max_degree
   end
 end

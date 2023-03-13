@@ -2,7 +2,7 @@
 
 module BTrees
   class BTreeNode
-    # minimum_degree = 2
+    # max_degree = 3
     # at most 2 keys
     # at most 3 children
     # More generally, for a B-tree of degree "m", the minimum degree is defined as ceil(m/2) - 1.
@@ -14,9 +14,8 @@ module BTrees
     # If the parent node already has three keys, it is split in the same way,
     # with the middle key moving up to its parent node.
 
-    def initialize(minimum_degree:)
-      @minimum_degree = minimum_degree
-      @maximum_degree = minimum_degree + 1
+    def initialize(max_degree:)
+      @max_degree = max_degree
 
       @keys = []
       @children = []
@@ -31,39 +30,31 @@ module BTrees
       else
         @children[i].insert(key)
 
-        split_child(i) if @children[i].full?
+        split_child(i) if @children[i].at_most_keys?
       end
     end
 
-    def split_child(i) # rubocop:disable Metrics/AbcSize
-      mid = @maximum_degree / 2
-      right_node = BTreeNode.new(minimum_degree: @minimum_degree)
+    def split_child(i) # rubocop:disable Metrics/AbcSize, Naming/MethodParameterName
+      mid = @max_degree / 2
+      right_node = BTreeNode.new(max_degree: @max_degree)
 
       split_key = @children[i].keys.delete_at(mid)
       @keys.insert(i, split_key)
 
       right_node.keys = @children[i].keys.slice!(mid..)
 
-      if @children[i].children.length == @minimum_degree * 2
-        right_node.children = @children[i].children.slice!(mid + 1..)
-      end
+      right_node.children = @children[i].children.slice!(mid + 1..) if @children[i].at_most_children?
 
       @children.insert(i + 1, right_node)
     end
 
-    def full?
-      @keys.length == @maximum_degree
+    def at_most_keys?
+      @keys.length == @max_degree
     end
 
-    private
-
-    # def search_leaf_for_insert(key)
-    #   return self if leaf?
-    #
-    #   i = @keys.bsearch_index { _1 >= key } || @keys.length
-    #
-    #   @children[i].search_leaf_for_insert(key)
-    # end
+    def at_most_children?
+      @children.length == (@max_degree - 1) * 2
+    end
 
     def leaf?
       @children.empty?

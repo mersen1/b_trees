@@ -3,7 +3,7 @@
 RSpec.describe BTrees::BTree do
   describe '#search' do
     it 'searches for the desired value' do
-      b_tree = described_class.new(minimum_degree: 2)
+      b_tree = described_class.new(max_degree: 3)
       b_tree.insert(5)
       b_tree.insert(10)
       b_tree.insert(15)
