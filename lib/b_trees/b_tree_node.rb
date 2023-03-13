@@ -35,7 +35,7 @@ module BTrees
       end
     end
 
-    def split_child(i) # rubocop:disable Naming/MethodParameterName
+    def split_child(i) # rubocop:disable Metrics/AbcSize
       mid = @maximum_degree / 2
       right_node = BTreeNode.new(minimum_degree: @minimum_degree)
 
@@ -43,6 +43,10 @@ module BTrees
       @keys.insert(i, split_key)
 
       right_node.keys = @children[i].keys.slice!(mid..)
+
+      if @children[i].children.length == @minimum_degree * 2
+        right_node.children = @children[i].children.slice!(mid + 1..)
+      end
 
       @children.insert(i + 1, right_node)
     end
