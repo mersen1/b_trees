@@ -37,14 +37,14 @@ module BTrees
 
     def split_child(i) # rubocop:disable Naming/MethodParameterName
       mid = @maximum_degree / 2
-      new_node = BTreeNode.new(minimum_degree: @minimum_degree)
+      right_node = BTreeNode.new(minimum_degree: @minimum_degree)
 
       split_key = @children[i].keys.delete_at(mid)
       @keys.insert(i, split_key)
 
-      new_node.keys = @children[i].keys.slice!(mid..)
+      right_node.keys = @children[i].keys.slice!(mid..)
 
-      @children << new_node
+      @children.insert(i + 1, right_node)
     end
 
     def full?
